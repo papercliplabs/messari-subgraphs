@@ -433,6 +433,9 @@ type Market @entity {
   " Smart contract address of the market "
   id: ID!
 
+  " Block number of this event "
+  creationBlockNumber: BigInt!
+
   " The protocol this pool belongs to "
   protocol: LendingProtocol!
 
@@ -546,6 +549,43 @@ type Market @entity {
   ##### Internal parameters #####
   " Pool factory address that spawned this market"
   _poolFactoryAddress: String!
+
+  _delegateAddress: String!
+
+  _stakeLocker: _StakeLocker!
+
+  " in liquidity asset, this does not include stake deposits (since these are not loanable) "
+  _cumulativeDeposit: BigInt!
+
+  " in liquidity asset, sum of all loans - sum of principal paid back - sum of amount recovered from liquidations - sum of excess not drawn down - sum of default suffered to pool or stakers "
+  _totalBorrowBalance: BigInt!
+
+  " Total borrows outstanding denoted in liquidity asset "
+  _cumulativeBorrow: BigInt!
+
+  " refer to loan taken from pool "
+  _loan: [_Loan!]! @derivedFrom(field: "market")
+
+  " in liquidity asset, amount of defaults to date that hit the pool "
+  _cumulativePoolDefault: BigInt!
+
+  " Liquidations to date denoted in pool input tokens "
+  _cumulativeCollatoralLiquidationInPoolInputTokens: BigInt
+
+  " in liquidity asset, includes recurring fees and establishment fees "
+  _poolDelegateRevenue: BigInt!
+
+  " PD revenue converted to usd "
+  _poolDelegateRevenueUSD: BigDecimal!
+
+  " Revenue sent to treasury, denoted in liquidity asset "
+  _treasuryRevenue: BigInt!
+
+  " Treasury revenue converted to usd "
+  _treasuryRevenueUSD: BigDecimal!
+
+  
+
 }
 
 #################################
@@ -904,6 +944,15 @@ type Repay implements Event @entity {
 
   " Amount of token repaid in USD "
   amountUSD: BigDecimal
+
+  " Principal paid on loan "
+  _principalPaid: BigInt!
+
+  " Interest paid on loan "
+  _interestPaid: BigInt!
+
+  " On time or not "
+  _wasLate: Boolean!
 }
 
 type Liquidate implements Event @entity {
@@ -946,7 +995,161 @@ type Liquidate implements Event @entity {
   amountUSD: BigDecimal
 
   " Amount of profit from liquidation in USD "
-  profitUSD: BigDecimal
+  profitUSD: BigDecimal " can this just be set to zero? "
+
+  " Total value of collateral - because loans are undercollateralized, all collateral is taken"
+  _amountRecoveredFromCollatoral: BigInt
+
+  " Size of loan minus collateral minus payments made"
+  _defaultSufferedToPoolAndStake: BigInt
+
+  " Also pressumably zero due to loan being undercollateralized "
+  _amountReturnedToBorrower: BigInt
+
+}
+
+type _Stake implements Event @entity {
+  " { Transaction hash }-{ Log index } "
+  id: ID!
+
+  " Transaction hash of the transaction that emitted this event "
+  hash: String!
+
+  " Event log index. For transactions that don't emit event, create arbitrary index starting from 0 "
+  logIndex: Int!
+
+  " The protocol this transaction belongs to "
+  protocol: LendingProtocol!
+
+  " Market that tokens are repaid to "
+  to: String!
+
+  " Address that carried out the liquidation "
+  from: String!
+
+  " Block number of this event "
+  blockNumber: BigInt!
+
+  " Timestamp of this event "
+  timestamp: BigInt!
+
+  ##### Lending-Specific #####
+
+  " The market the stake is being added to "
+  market: Market!
+
+  " Stake token "
+  asset: Token!
+
+  " Amount of asset being staked "
+  amount: BigInt!
+
+  " Amount of stake tokens being staked in USD "
+  amountUSD: BigDecimal
+}
+
+type _Unstake implements Event @entity {
+  " { Transaction hash }-{ Log index } "
+  id: ID!
+
+  " Transaction hash of the transaction that emitted this event "
+  hash: String!
+
+  " Event log index. For transactions that don't emit event, create arbitrary index starting from 0 "
+  logIndex: Int!
+
+  " The protocol this transaction belongs to "
+  protocol: LendingProtocol!
+
+  " Market that tokens are repaid to "
+  to: String!
+
+  " Address that carried out the liquidation "
+  from: String!
+
+  " Block number of this event "
+  blockNumber: BigInt!
+
+  " Timestamp of this event "
+  timestamp: BigInt!
+
+  ##### Lending-Specific #####
+
+  " The market stake is being removed from "
+  market: Market!
+
+  " Stake token "
+  asset: Token!
+
+  " Amount of asset being unstaked "
+  amount: BigInt!
+
+  " Amount of stake tokens being unstaked in USD "
+  amountUSD: BigDecimal
+}
+
+type _PoolFactory implements Event @entity{
+  
+  " Address to which event was to "
+  id: ID!
+
+  " Timestamp of this event "
+  createdTimestamp: BigInt!
+
+  " Block number of this event "
+  creationBlockNumber: BigInt!
+
+  " The market to which this poolFactory belongs "
+  market: [Market!]! @derivedFrom(field: "_poolFactoryAddress")
+
+}
+
+type _StakeLocker implements Event @entity{
+
+  " Id of the stakelocker made "
+  id: ID!
+
+  " The market (pool) which this locker belongs to "
+  market: Market!
+
+  " Address for tokens used during staking "
+  stakeToken: String!
+
+  " calculated as sum of all stake - sum of all unstake - sum of bpt burned to cover liquidations "
+  stakeTokenBalance: BigInt!
+
+  " value of stakeTokens if they were all swapped for pool input tokens (i.e amount available to cover defaults) "
+  stakeTokenBalanceInPoolInputTokens: BigInt!
+
+  " stakeTokenBalanceInPoolInputTokens * market.inputTokenPriceUSD / stakeTokenBalance "
+  stakeTokenPriceUSD: BigDecimal! 
+
+  " amount in stake tokens lost to cover defaults "
+  cumulativeStakeDefault: BigInt!
+
+  " amount in input tokens lost to cover defaults "
+  cumulativeStakeDefaultInPoolInputTokens: BigInt!
+
+  " Amount of revenue earned by staker between claims "
+  _stakerRevenue: BigInt!
+
+  " _stakerRevenue * market.inputTokenPriceUSD "
+  _stakerRevenueUSD: BigDecimal!
+}
+
+type _Loan implements Event @entity{
+
+  " id of the loan taken "
+  id: ID!
+
+  " the address to which the event was to "
+  market: Market!
+
+  " Size of the loan denoted in pool liquidity asset "
+  amountFunded: BigInt!
+
+  "  "
+  
 }
 
 type _Stake implements Event @entity {
@@ -1041,3 +1244,4 @@ type ActiveAccount @entity {
   " { Address of the account }-{ Days since Unix epoch }-{ [Optional] HH: hour of the day } "
   id: ID!
 }
+
