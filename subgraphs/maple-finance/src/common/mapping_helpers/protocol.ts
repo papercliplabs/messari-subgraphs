@@ -25,6 +25,7 @@ export function getOrCreateProtocol(): LendingProtocol {
         protocol.slug = PROTOCOL_SLUG;
         protocol.schemaVersion = PROTOCOL_SCHEMA_VERSION;
         protocol.subgraphVersion = PROTOCOL_SUBGRAPH_VERSION;
+
         protocol.methodologyVersion = PROTOCOL_METHODOLOGY_VERSION;
         protocol.network = PROTOCOL_NETWORK;
         protocol.type = PROTOCOL_TYPE;
@@ -44,6 +45,7 @@ export function getOrCreateProtocol(): LendingProtocol {
         protocol.cumulativeLiquidateUSD = ZERO_BD;
         protocol.mintedTokenSupplies = [];
         console.log("Merge conflict");
+
         protocol._treasuryFee = PROTOCOL_INITIAL_TREASURY_FEE;
 
         protocol.save();
