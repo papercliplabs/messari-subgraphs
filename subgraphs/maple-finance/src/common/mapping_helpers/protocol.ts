@@ -43,6 +43,7 @@ export function getOrCreateProtocol(): LendingProtocol {
         protocol.cumulativeBorrowUSD = ZERO_BD;
         protocol.cumulativeLiquidateUSD = ZERO_BD;
         protocol.mintedTokenSupplies = [];
+        console.log("Merge conflict");
         protocol._treasuryFee = PROTOCOL_INITIAL_TREASURY_FEE;
 
         protocol.save();
