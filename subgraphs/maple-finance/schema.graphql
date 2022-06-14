@@ -33,6 +33,11 @@ enum OracleType {
     MAPLE
     CHAIN_LINK
     YEARN_LENS
+    CURVE_CALC
+    SUSHISWAP_CALC
+    CURVE_ROUTE
+    UNISWAP_ROUTE
+    SUSHISWAP_ROUTE
 }
 
 type Token @entity {
