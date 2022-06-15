@@ -44,6 +44,101 @@ export const WHITELIST_TOKENS_LIST: string[] = [
   "CRV",
 ];
 
+export namespace Network {
+  export const ARBITRUM_ONE = "ARBITRUM_ONE";
+  export const AVALANCHE = "AVALANCHE";
+  export const AURORA = "AURORA";
+  export const BSC = "BSC"; // aka BNB Chain
+  export const CELO = "CELO";
+  export const MAINNET = "MAINNET"; // Ethereum mainnet
+  export const FANTOM = "FANTOM";
+  export const FUSE = "FUSE";
+  export const MOONBEAM = "MOONBEAM";
+  export const MOONRIVER = "MOONRIVER";
+  export const NEAR_MAINNET = "NEAR_MAINNET";
+  export const OPTIMISM = "OPTIMISM";
+  export const MATIC = "MATIC"; // aka Polygon
+  export const XDAI = "XDAI"; // aka Gnosis Chain
+}
+
+export namespace ProtocolType {
+  export const EXCHANGE = "EXCHANGE";
+  export const LENDING = "LENDING";
+  export const YIELD = "YIELD";
+  export const BRIDGE = "BRIDGE";
+  export const GENERIC = "GENERIC";
+}
+
+export namespace RewardTokenType {
+  export const DEPOSIT = "DEPOSIT";
+  export const BORROW = "BORROW";
+}
+
+export namespace LendingType {
+  export const CDP = "CDP";
+  export const POOLED = "POOLED";
+}
+
+export namespace RiskType {
+  export const GLOBAL = "GLOBAL";
+  export const ISOLATED = "ISOLATED";
+}
+
+export namespace InterestRateType {
+  export const STABLE = "STABLE";
+  export const VARIABLE = "VARIABLE";
+  export const FIXED_TERM = "FIXED_TERM";
+}
+
+export namespace InterestRateSide {
+  export const LENDER = "LENDER";
+  export const BORROWER = "BORROWER";
+}
+
+export namespace TransactionType {
+  export const DEPOSIT = "DEPOSIT";
+  export const WITHDRAW = "WITHDRAW";
+  export const CLAIM = "CLAIM";
+  export const BORROW = "BORROW";
+  export const REPAY = "REPAY";
+  export const LIQUIDATE = "LIQUIDATE";
+  export const STAKE = "STAKE";
+  export const UNSTAKE = "UNSTAKE";
+}
+
+export namespace StakeType {
+  export const STAKE_LOCKER = "STAKE_LOCKER";
+  export const MPL_LP_REWARDS = "MPL_LP_REWARDS";
+  export const MPL_STAKE_REWARDS = "MPL_STAKE_REWARDS";
+}
+
+export namespace OracleType {
+  export const NONE = "NONE";
+  export const MAPLE = "MAPLE";
+  export const CHAIN_LINK = "CHAIN_LINK";
+  export const YEARN_LENS = "YEARN_LENS";
+  export const CURVE_CALC = "CURVE_CALC";
+  export const SUSHISWAP_CALC = "SUSHISWAP_CALC";
+  export const CURVE_ROUTE = "CURVE_ROUTE";
+  export const SUSHISWAP_ROUTE = "SUSHISWAP_ROUTE";
+  export const UNISWAP_ROUTE = "UNISWAP_ROUTE";
+}
+
+export namespace LoanVersion {
+  export const V1 = "V1";
+  export const V2_OR_V3 = "V2_OR_V3";
+}
+
+////////////////////////////
+///// Solifidity Enums /////
+////////////////////////////
+
+export namespace PoolState {
+  export const Initialized: i32 = 0;
+  export const Finalized: i32 = 1;
+  export const Deactivated: i32 = 2;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////// CURVE CONTRACT //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -221,4 +316,22 @@ WHITELIST_TOKENS_MAP.set(FANTOM.NETWORK_STRING, FANTOM.WHITELIST_TOKENS);
 WHITELIST_TOKENS_MAP.set(
   ARBITRUM_ONE.NETWORK_STRING,
   ARBITRUM_ONE.WHITELIST_TOKENS
+);
+
+/////////////////////////////
+///// Maple Protocol /////
+/////////////////////////////
+
+export const MAPLE_CONTRACT_ADDRESS = new Map<string, string>();
+MAPLE_CONTRACT_ADDRESS.set(
+  MAINNET.NETWORK_STRING,
+  MAINNET.MAPLE_CONTRACT_ADDRESS
+);
+MAPLE_CONTRACT_ADDRESS.set(
+  FANTOM.NETWORK_STRING,
+  FANTOM.MAPLE_CONTRACT_ADDRESS
+);
+MAPLE_CONTRACT_ADDRESS.set(
+  ARBITRUM_ONE.NETWORK_STRING,
+  ARBITRUM_ONE.MAPLE_CONTRACT_ADDRESS
 );

@@ -7,18 +7,34 @@ import {
     Transfer as TransferEvent,
     Claim as ClaimEvent,
     DefaultSuffered as DefaultSufferedEvent,
-    FundsWithdrawn as FundsWithdrawnEvent
+    FundsWithdrawn as FundsWithdrawnEvent,
+    LossesRecognized as LossesRecognizedEvent
 } from "../../generated/templates/Pool/Pool";
 
 import { LoanVersion, PoolState } from "../common/constants";
 import {
+    getOrCreateAccountMarket,
     getOrCreateLoan,
     getOrCreateMarket,
     getOrCreateStakeLocker
 } from "../common/mappingHelpers/getOrCreate/markets";
 import { createInterestRate } from "../common/mappingHelpers/getOrCreate/supporting";
-import { createClaim, createDeposit, createWithdraw } from "../common/mappingHelpers/getOrCreate/transactions";
+import {
+    createClaim,
+    createDeposit,
+    createLiquidate,
+    createWithdraw
+} from "../common/mappingHelpers/getOrCreate/transactions";
 import { marketTick } from "../common/mappingHelpers/update/market";
+
+export function handleLossesRecognized(event: LossesRecognizedEvent): void {
+    const market = getOrCreateMarket(event, event.address);
+    const accountAddress = event.transaction.from;
+    const accountMarket = getOrCreateAccountMarket(event, accountAddress, market);
+
+    accountMarket.unrecognizedLosses = accountMarket.unrecognizedLosses.plus(event.params.lossesRecognized);
+    accountMarket.save();
+}
 
 export function handleTransfer(event: TransferEvent): void {
     if (Address.zero() == event.params.from) {
@@ -108,8 +124,14 @@ export function handleClaim(event: ClaimEvent): void {
 }
 
 export function handleDefaultSuffered(event: DefaultSufferedEvent): void {
-    // Update stake locker
+    // Create liquidation
     const market = getOrCreateMarket(event, event.address);
+    const loan = getOrCreateLoan(event, event.params.loan);
+    const defaultSufferedByStakeLocker = event.params.liquidityAssetRecoveredFromBurn;
+    const defaultSufferedByPool = event.params.defaultSuffered.minus(defaultSufferedByStakeLocker);
+    createLiquidate(event, loan, defaultSufferedByStakeLocker, defaultSufferedByPool);
+
+    // Update stake locker
     const stakeLocker = getOrCreateStakeLocker(event, Address.fromString(market._stakeLocker));
     stakeLocker.stakeTokenBalance = stakeLocker.stakeTokenBalance.minus(event.params.bptsBurned);
     stakeLocker.cumulativeStakeDefault = stakeLocker.cumulativeStakeDefault.plus(event.params.bptsBurned);
@@ -133,7 +155,7 @@ export function handleDefaultSuffered(event: DefaultSufferedEvent): void {
 }
 
 export function handleFundsWithdrawn(event: FundsWithdrawnEvent): void {
-    // Deposit (mint)
+    // Claim interest
     const marketAddress = event.address;
     const market = getOrCreateMarket(event, marketAddress);
     const claim = createClaim(event, market, event.params.fundsWithdrawn);

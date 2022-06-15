@@ -1,6 +1,6 @@
 import { Address, ethereum, BigInt, BigDecimal, log } from "@graphprotocol/graph-ts";
 
-import { Market, _Loan, _MplReward, _StakeLocker } from "../../../../generated/schema";
+import { Market, _AccountMarket, _Loan, _MplReward, _StakeLocker } from "../../../../generated/schema";
 import { LoanV2OrV3 as LoanV2OrV3Contract } from "../../../../generated/templates/LoanV2OrV3/LoanV2OrV3";
 import { LoanV1 as LoanV1Contract } from "../../../../generated/templates/LoanV1/LoanV1";
 import { Pool as PoolContract } from "../../../../generated/templates/Pool/Pool";
@@ -60,6 +60,12 @@ export function getOrCreateMarket(event: ethereum.Event, marketAddress: Address)
             poolContract.try_liquidityAsset.name
         );
 
+        const liquidityLockerAddress = readCallResult(
+            poolContract.try_liquidityLocker(),
+            ZERO_ADDRESS,
+            poolContract.try_liquidityLocker.name
+        );
+
         const inputToken = getOrCreateToken(inputTokenAddress);
 
         // Following _toWad function
@@ -98,6 +104,7 @@ export function getOrCreateMarket(event: ethereum.Event, marketAddress: Address)
         market._poolFactory = poolFactoryAddress.toHexString();
         market._delegateAddress = delegateAddress.toHexString();
         market._stakeLocker = stakeLockerAddress.toHexString();
+        market._liquidityLockerAddress = liquidityLockerAddress.toHexString();
         market._cumulativeDeposit = ZERO_BI;
         market._totalBorrowBalance = ZERO_BI;
         market._cumulativeBorrow = ZERO_BI;
@@ -322,4 +329,29 @@ export function getOrCreateMplReward(event: ethereum.Event, mplRewardAddress: Ad
     }
 
     return mplReward;
+}
+
+/**
+ * Get the account at this address in this market, or create it if it doesn't exist.
+ */
+export function getOrCreateAccountMarket(
+    event: ethereum.Event,
+    accountAddress: Address,
+    market: Market
+): _AccountMarket {
+    const id = accountAddress.toHexString() + "-" + market.id;
+    let accountMarket = _AccountMarket.load(id);
+
+    if (!accountMarket) {
+        accountMarket = new _AccountMarket(id);
+
+        accountMarket.market = market.id;
+        accountMarket.unrecognizedLosses = ZERO_BI;
+        accountMarket.recognizedLosses = ZERO_BI;
+
+        accountMarket.creationBlockNumber = event.block.number;
+        accountMarket.save();
+    }
+
+    return accountMarket;
 }

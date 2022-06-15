@@ -130,6 +130,26 @@ templates:
                 file: ./abis/ChainLinkOracle.json
               - name: YearnOracle
                 file: ./abis/YearnOracle.json
+              - name: CurveRegistry
+                file: ./abis/Curve/Registry.json
+              - name: CurvePoolRegistry
+                file: ./abis/CurvePool/Registry.json
+              - name: CalculationsCurve
+                file: ./abis/Calculations/Curve.json
+              - name: UniswapRouter
+                file: ./abis/Uniswap/Router.json
+              - name: UniswapFactory
+                file: ./abis/Uniswap/Factory.json
+              - name: UniswapPair
+                file: ./abis/Uniswap/Pair.json
+              - name: SushiSwapRouter
+                file: ./abis/SushiSwap/Router.json
+              - name: SushiSwapFactory
+                file: ./abis/SushiSwap/Factory.json
+              - name: SushiSwapPair
+                file: ./abis/SushiSwap/Pair.json
+              - name: CalculationsSushiSwap
+                file: ./abis/Calculations/SushiSwap.json
               - name: PoolLib
                 file: ./abis/PoolLib.json
               - name: StakeLocker
@@ -137,6 +157,8 @@ templates:
               - name: MplReward
                 file: ./abis/MplRewards.json
           eventHandlers:
+              - event: LossesRecognized(indexed address,uint256,uint256)
+                handler: handleLossesRecognized
               - event: Transfer(indexed address,indexed address,uint256)
                 handler: handleTransfer
               - event: PoolStateChanged(uint8)
@@ -182,6 +204,26 @@ templates:
                 file: ./abis/ChainLinkOracle.json
               - name: YearnOracle
                 file: ./abis/YearnOracle.json
+              - name: CurveRegistry
+                file: ./abis/Curve/Registry.json
+              - name: CurvePoolRegistry
+                file: ./abis/CurvePool/Registry.json
+              - name: CalculationsCurve
+                file: ./abis/Calculations/Curve.json
+              - name: UniswapRouter
+                file: ./abis/Uniswap/Router.json
+              - name: UniswapFactory
+                file: ./abis/Uniswap/Factory.json
+              - name: UniswapPair
+                file: ./abis/Uniswap/Pair.json
+              - name: SushiSwapRouter
+                file: ./abis/SushiSwap/Router.json
+              - name: SushiSwapFactory
+                file: ./abis/SushiSwap/Factory.json
+              - name: SushiSwapPair
+                file: ./abis/SushiSwap/Pair.json
+              - name: CalculationsSushiSwap
+                file: ./abis/Calculations/SushiSwap.json
               - name: PoolLib
                 file: ./abis/PoolLib.json
               - name: MplReward
@@ -228,6 +270,26 @@ templates:
                 file: ./abis/ChainLinkOracle.json
               - name: YearnOracle
                 file: ./abis/YearnOracle.json
+              - name: CurveRegistry
+                file: ./abis/Curve/Registry.json
+              - name: CurvePoolRegistry
+                file: ./abis/CurvePool/Registry.json
+              - name: CalculationsCurve
+                file: ./abis/Calculations/Curve.json
+              - name: UniswapRouter
+                file: ./abis/Uniswap/Router.json
+              - name: UniswapFactory
+                file: ./abis/Uniswap/Factory.json
+              - name: UniswapPair
+                file: ./abis/Uniswap/Pair.json
+              - name: SushiSwapRouter
+                file: ./abis/SushiSwap/Router.json
+              - name: SushiSwapFactory
+                file: ./abis/SushiSwap/Factory.json
+              - name: SushiSwapPair
+                file: ./abis/SushiSwap/Pair.json
+              - name: CalculationsSushiSwap
+                file: ./abis/Calculations/SushiSwap.json
               - name: PoolLib
                 file: ./abis/PoolLib.json
               - name: MplReward
@@ -276,6 +338,26 @@ templates:
                 file: ./abis/ChainLinkOracle.json
               - name: YearnOracle
                 file: ./abis/YearnOracle.json
+              - name: CurveRegistry
+                file: ./abis/Curve/Registry.json
+              - name: CurvePoolRegistry
+                file: ./abis/CurvePool/Registry.json
+              - name: CalculationsCurve
+                file: ./abis/Calculations/Curve.json
+              - name: UniswapRouter
+                file: ./abis/Uniswap/Router.json
+              - name: UniswapFactory
+                file: ./abis/Uniswap/Factory.json
+              - name: UniswapPair
+                file: ./abis/Uniswap/Pair.json
+              - name: SushiSwapRouter
+                file: ./abis/SushiSwap/Router.json
+              - name: SushiSwapFactory
+                file: ./abis/SushiSwap/Factory.json
+              - name: SushiSwapPair
+                file: ./abis/SushiSwap/Pair.json
+              - name: CalculationsSushiSwap
+                file: ./abis/Calculations/SushiSwap.json
               - name: PoolLib
                 file: ./abis/PoolLib.json
               - name: MplReward
@@ -319,6 +401,26 @@ templates:
                 file: ./abis/ChainLinkOracle.json
               - name: YearnOracle
                 file: ./abis/YearnOracle.json
+              - name: CurveRegistry
+                file: ./abis/Curve/Registry.json
+              - name: CurvePoolRegistry
+                file: ./abis/CurvePool/Registry.json
+              - name: CalculationsCurve
+                file: ./abis/Calculations/Curve.json
+              - name: UniswapRouter
+                file: ./abis/Uniswap/Router.json
+              - name: UniswapFactory
+                file: ./abis/Uniswap/Factory.json
+              - name: UniswapPair
+                file: ./abis/Uniswap/Pair.json
+              - name: SushiSwapRouter
+                file: ./abis/SushiSwap/Router.json
+              - name: SushiSwapFactory
+                file: ./abis/SushiSwap/Factory.json
+              - name: SushiSwapPair
+                file: ./abis/SushiSwap/Pair.json
+              - name: CalculationsSushiSwap
+                file: ./abis/Calculations/SushiSwap.json
               - name: PoolLib
                 file: ./abis/PoolLib.json
               - name: StakeLocker
