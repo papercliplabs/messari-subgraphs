@@ -1,4 +1,5 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { LiquidityAssetSet } from "../../../../generated/MapleGlobals/MapleGlobals";
 
 import {
     Borrow,
@@ -59,15 +60,30 @@ export function createDeposit(event: ethereum.Event, market: Market, amountMPTMi
  * Create withdraw entity for withdrawing principal out of the market, this also includes recognizing unrecognized pool losses
  * @param market market withdrawing out of into
  * @param amountMPTMinted amount of LP tokens that were burned on the withdraw
+<<<<<<< HEAD
  * @returns withdraw entity
  */
 export function createWithdraw(event: ethereum.Event, market: Market, amountMPTBurned: BigInt): Withdraw {
+=======
+ * @param unrecognizedLosses unrecognized losses getting recognized on this withdraw
+ * @returns withdraw entity
+ */
+export function createWithdraw(
+    event: ethereum.Event,
+    market: Market,
+    amountMPTBurned: BigInt,
+    unrecognizedLosses: BigInt
+): Withdraw {
+>>>>>>> 46a378cf5179cd2210db87254d142d7bca9c0e0c
     const id = event.transaction.hash.toHexString() + "-" + event.logIndex.toString();
     const withdraw = new Withdraw(id);
 
     const asset = getOrCreateToken(Address.fromString(market.inputToken));
     const accountAddress = event.transaction.from;
+<<<<<<< HEAD
     const accountMarket = getOrCreateAccountMarket(event, accountAddress, market);
+=======
+>>>>>>> 46a378cf5179cd2210db87254d142d7bca9c0e0c
 
     const losslessAmount = bigDecimalToBigInt(amountMPTBurned.toBigDecimal().times(market._initialExchangeRate));
 
@@ -82,17 +98,24 @@ export function createWithdraw(event: ethereum.Event, market: Market, amountMPTB
     withdraw.from = market._liquidityLockerAddress;
     withdraw.to = accountAddress.toHexString(); // from since its a burn
     withdraw._amountMPT = amountMPTBurned;
+<<<<<<< HEAD
     withdraw._losses = minBigInt(accountMarket.unrecognizedLosses, losslessAmount);
+=======
+    withdraw._losses = minBigInt(unrecognizedLosses, losslessAmount);
+>>>>>>> 46a378cf5179cd2210db87254d142d7bca9c0e0c
     withdraw.amount = losslessAmount.minus(withdraw._losses);
     withdraw.amountUSD = getTokenAmountInUSD(event, asset, withdraw.amount);
 
     withdraw.save();
 
+<<<<<<< HEAD
     // Recognize the account losses
     accountMarket.unrecognizedLosses = accountMarket.unrecognizedLosses.minus(withdraw._losses);
     accountMarket.recognizedLosses = accountMarket.recognizedLosses.plus(withdraw._losses);
     accountMarket.save();
 
+=======
+>>>>>>> 46a378cf5179cd2210db87254d142d7bca9c0e0c
     updateUsageMetrics(event, accountAddress, TransactionType.WITHDRAW);
 
     return withdraw;
